@@ -13,7 +13,7 @@ from rlgym_tools.sb3_utils import SB3MultipleInstanceEnv
 
 from rewards.jump_touch_reward import JumpTouchReward
 from rewards.velocity_rewards import VelocityBallToGoalReward, VelocityPlayerToBallReward, GoalVelocityReward
-from rlgym_tools.extra_rewards.kickoff_reward import KickoffReward
+from rewards.kickoff_reward import KickoffReward
 from rlgym.utils.reward_functions.common_rewards.misc_rewards import EventReward
 from rlgym.utils.reward_functions.common_rewards import VelocityPlayerToBallReward
 from rlgym.utils.reward_functions import CombinedReward
