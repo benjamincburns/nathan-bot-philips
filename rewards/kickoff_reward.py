@@ -1,5 +1,5 @@
 from rlgym.utils.reward_functions import RewardFunction
-from rlgym.utils.reward_functions.common_rewards.player_ball_rewards import VelocityPlayerToBallReward
+from rewards.velocity_rewards import VelocityPlayerToBallReward
 
 from rlgym.utils.gamestates import GameState, PlayerData
 
@@ -21,4 +21,4 @@ class KickoffReward(RewardFunction):
     reward = 0
     if state.ball.position[0] == 0 and state.ball.position[1] == 0:
       reward += self.vel_dir_reward.get_reward(player, state, previous_action)
-    return
+    return reward
