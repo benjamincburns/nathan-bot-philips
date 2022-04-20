@@ -14,11 +14,11 @@ def reward_function():
             GoalVelocityReward(),
             EventReward(
                 team_goal=100.0,
-                concede=-150.0,
+                concede=-100.0,
                 shot=10.0,
                 save=75.0,
                 demo=25.0
             ),
         ),
-        (0.1, 1.0, 1.0, 1.0, 100, 1.0)
+        (0.001, 0.01, 0.01, 0.01, 1.0, 0.01)
     )
