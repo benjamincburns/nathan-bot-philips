@@ -1,0 +1,6 @@
+.venv
+.python-version
+*.pyc
+logs
+mmr_models
+models/rl_model*.zip
