@@ -7,7 +7,15 @@ rlbot==1.*
 torch>=1.11.0
 rlgym-compat==1.*
 rlgym-tools==1.*
-numpy==1.*
-stable_baselines3==1.*
-pickle5>=0.0.11
+tqdm
+trueskill
+msgpack_numpy
+wandb
+pygame
+keyboard
+redis
+rlgym
+plotly
+numba
 
+git+https://github.com/Rolv-Arild/rocket-learn.git@92a08ef09cb2294b91b6b5748b7967ea0e2314e4
