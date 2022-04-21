@@ -76,14 +76,17 @@ if __name__ == "__main__":
     # TOTAL SIZE OF THE INPUT DATA
     state_dim = 107
 
-    shared1 = Linear(512, 512)
-    shared2 = Linear(512, 256)
+    shared1 = Tanh()
+    shared2 = Linear(512, 512)
+    shared3 = Tanh()
+    shared4 = Linear(512, 256)
 
     critic = Sequential(
         Linear(state_dim, 512),
         shared1,
-        Tanh(),
         shared2,
+        shared3,
+        shared4,
         Tanh(),
         Linear(256, 256),
         Tanh(),
@@ -94,11 +97,12 @@ if __name__ == "__main__":
         Linear(256, 1)
     )
 
-    actor = DiscretePolicy(Sequential(
+    actor_net = Sequential(
         Linear(state_dim, 512),
         shared1,
-        Tanh(),
         shared2,
+        shared3,
+        shared4,
         Tanh(),
         Linear(256, 256),
         Tanh(),
@@ -108,11 +112,16 @@ if __name__ == "__main__":
         Tanh(),
         Linear(256, total_output),
         SplitLayer(splits=split)
-    ), split)
+    )
+
+    actor = DiscretePolicy(actor_net, split)
 
     optim = torch.optim.Adam([
-        {"params": actor.parameters(), "lr": 5e-5},
-        {"params": critic.parameters(), "lr": 5e-5}
+        {"params": actor_net[1:5].parameters(), "lr": 5e-5}, # shared layer
+        {"params": actor_net[0].parameters(), "lr": 5e-5}, # actor input layer
+        {"params": actor_net[5:].parameters(), "lr": 5e-5}, # actor remaining layers
+        {"params": critic[0].parameters(), "lr": 5e-5}, # critic input layer
+        {"params": critic[5:].parameters(), "lr": 5e-5},# critic remaining layers
     ])
 
     # PPO REQUIRES AN ACTOR/CRITIC AGENT
