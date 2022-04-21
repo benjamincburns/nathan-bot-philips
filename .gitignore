@@ -5,3 +5,4 @@ wandb
 logs
 mmr_models
 models/rl_model*.zip
+*_backup
