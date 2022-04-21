@@ -76,8 +76,14 @@ if __name__ == "__main__":
     # TOTAL SIZE OF THE INPUT DATA
     state_dim = 107
 
+    shared1 = Linear(512, 512)
+    shared2 = Linear(512, 256)
+
     critic = Sequential(
-        Linear(state_dim, 256),
+        Linear(state_dim, 512),
+        shared1,
+        Tanh(),
+        shared2,
         Tanh(),
         Linear(256, 256),
         Tanh(),
@@ -89,7 +95,10 @@ if __name__ == "__main__":
     )
 
     actor = DiscretePolicy(Sequential(
-        Linear(state_dim, 256),
+        Linear(state_dim, 512),
+        shared1,
+        Tanh(),
+        shared2,
         Tanh(),
         Linear(256, 256),
         Tanh(),
