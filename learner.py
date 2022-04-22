@@ -1,4 +1,4 @@
-import os
+import os, re
 import wandb
 import numpy
 from typing import Any
@@ -19,6 +19,8 @@ from rocket_learn.ppo import PPO
 from rocket_learn.rollout_generator.redis_rollout_generator import RedisRolloutGenerator
 from rocket_learn.utils.util import SplitLayer
 
+from utils import get_latest_model_path
+
 
 # ROCKET-LEARN ALWAYS EXPECTS A BATCH DIMENSION IN THE BUILT OBSERVATION
 class ExpandAdvancedObs(AdvancedObs):
@@ -26,6 +28,18 @@ class ExpandAdvancedObs(AdvancedObs):
         obs = super(ExpandAdvancedObs, self).build_obs(player, state, previous_action)
         return numpy.expand_dims(obs, 0)
 
+config = {
+    "ent_coef": 0.01,
+    "n_steps": 1_000_000,
+    "batch_size": 100_000,
+    "minibatch_size": 20_000,
+    "epochs": 30,
+    "gamma": 0.995,
+    "shared_lr": 1e-4,
+    "actor_lr": 1e-4,
+    "critic_lr": 1e-4,
+    "iterations_per_save": 10,
+}
 
 if __name__ == "__main__":
     """
@@ -38,8 +52,13 @@ if __name__ == "__main__":
     # ROCKET-LEARN USES WANDB WHICH REQUIRES A LOGIN TO USE. YOU CAN SET AN ENVIRONMENTAL VARIABLE
     # OR HARDCODE IT IF YOU ARE NOT SHARING YOUR SOURCE FILES
     wandb.login(key=os.environ["WANDB_API_KEY"])
-    logger = wandb.init(project="nathan-bot-philips", entity="some_rando_rl")
-    logger.name = "Nathan Bot Phillips"
+    logger = wandb.init(
+        project="nathan-bot-philips",
+        entity="some_rando_rl",
+        name="Nathan Bot Philips",
+        id="3th4m7kt",
+        config=config
+    )
 
     # LINK TO THE REDIS SERVER YOU SHOULD HAVE RUNNING (USE THE SAME PASSWORD YOU SET IN THE REDIS
     # CONFIG)
@@ -49,6 +68,7 @@ if __name__ == "__main__":
     redis_password = os.environ.get("REDIS_PASSWORD", None)
 
     redis = Redis(host=redis_host, port=redis_port, password=redis_password)
+    redis.delete("worker-counter")  # Reset to 0
 
     # ENSURE OBSERVATION, REWARD, AND ACTION CHOICES ARE THE SAME IN THE WORKER
     def obs():
@@ -117,11 +137,11 @@ if __name__ == "__main__":
     actor = DiscretePolicy(actor_net, split)
 
     optim = torch.optim.Adam([
-        {"params": actor_net[1:5].parameters(), "lr": 5e-5}, # shared layer
-        {"params": actor_net[0].parameters(), "lr": 5e-5}, # actor input layer
-        {"params": actor_net[5:].parameters(), "lr": 5e-5}, # actor remaining layers
-        {"params": critic[0].parameters(), "lr": 5e-5}, # critic input layer
-        {"params": critic[5:].parameters(), "lr": 5e-5},# critic remaining layers
+        {"params": actor_net[1:5].parameters(), "lr": logger.config.shared_lr}, # shared layer
+        {"params": actor_net[0].parameters(), "lr": logger.config.actor_lr}, # actor input layer
+        {"params": actor_net[5:].parameters(), "lr": logger.config.actor_lr}, # actor remaining layers
+        {"params": critic[0].parameters(), "lr": logger.config.actor_lr}, # critic input layer
+        {"params": critic[5:].parameters(), "lr": logger.config.actor_lr},# critic remaining layers
     ])
 
     # PPO REQUIRES AN ACTOR/CRITIC AGENT
@@ -130,16 +150,23 @@ if __name__ == "__main__":
     alg = PPO(
         rollout_gen,
         agent,
-        ent_coef=0.01,
-        n_steps=1_000_000,
-        batch_size=100_000,
-        minibatch_size=20_000,
-        epochs=30,
-        gamma=0.995,
+        ent_coef=logger.config.ent_coef,
+        n_steps=logger.config.n_steps,
+        batch_size=logger.config.batch_size,
+        minibatch_size=logger.config.minibatch_size,
+        epochs=logger.config.epochs,
+        gamma=logger.config.gamma,
         logger=logger,
     )
+
+    # see if we already have a pretrained model
+    latest_model = get_latest_model_path(logger)
 
     # BEGIN TRAINING. IT WILL CONTINUE UNTIL MANUALLY STOPPED
     # -iterations_per_save SPECIFIES HOW OFTEN CHECKPOINTS ARE SAVED
     # -save_dir SPECIFIES WHERE
-    alg.run(iterations_per_save=5, save_dir="models")
+    if latest_model:
+        print("Loading model at path \"%s\"" % latest_model)
+        alg.load(latest_model)
+
+    alg.run(iterations_per_save=logger.config.iterations_per_save, save_dir="models")
