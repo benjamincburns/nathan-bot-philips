@@ -96,17 +96,14 @@ if __name__ == "__main__":
     # TOTAL SIZE OF THE INPUT DATA
     state_dim = 107
 
-    shared1 = Tanh()
-    shared2 = Linear(512, 512)
-    shared3 = Tanh()
-    shared4 = Linear(512, 256)
+    shared1 = Linear(state_dim, 512)
+    shared2 = Tanh()
+    shared3 = Linear(512, 256)
 
     critic = Sequential(
-        Linear(state_dim, 512),
         shared1,
         shared2,
         shared3,
-        shared4,
         Tanh(),
         Linear(256, 256),
         Tanh(),
@@ -118,11 +115,9 @@ if __name__ == "__main__":
     )
 
     actor_net = Sequential(
-        Linear(state_dim, 512),
         shared1,
         shared2,
         shared3,
-        shared4,
         Tanh(),
         Linear(256, 256),
         Tanh(),
@@ -137,11 +132,9 @@ if __name__ == "__main__":
     actor = DiscretePolicy(actor_net, split)
 
     optim = torch.optim.Adam([
-        {"params": actor_net[1:5].parameters(), "lr": logger.config.shared_lr}, # shared layer
-        {"params": actor_net[0].parameters(), "lr": logger.config.actor_lr}, # actor input layer
-        {"params": actor_net[5:].parameters(), "lr": logger.config.actor_lr}, # actor remaining layers
-        {"params": critic[0].parameters(), "lr": logger.config.actor_lr}, # critic input layer
-        {"params": critic[5:].parameters(), "lr": logger.config.actor_lr},# critic remaining layers
+        {"params": actor_net[0:4].parameters(), "lr": logger.config.shared_lr}, # shared layer
+        {"params": actor_net[4:].parameters(), "lr": logger.config.actor_lr}, # actor remaining layers
+        {"params": critic[4:].parameters(), "lr": logger.config.actor_lr},# critic remaining layers
     ])
 
     # PPO REQUIRES AN ACTOR/CRITIC AGENT
