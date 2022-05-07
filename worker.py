@@ -70,5 +70,6 @@ if __name__ == "__main__":
         match,
         streamer_mode=streamer,
         past_version_prob=0.2 if not streamer else 0,
-        evaluation_prob=0.01 if not streamer else 0
+        evaluation_prob=0.01 if not streamer else 0,
+        force_paging=True
     ).run()
