@@ -1,21 +1,21 @@
 # Include everything the framework requires
 # You will automatically get updates for all versions starting with "1.".
-rlbot==1.*
+rlbot==1.65.0
 
 --find-links https://download.pytorch.org/whl/torch_stable.html
 #torch>=1.11.0+cu115
 torch>=1.11.0
-rlgym-compat==1.*
-rlgym-tools==1.*
-tqdm
-trueskill
+rlgym-compat==1.0.2
+rlgym-tools==1.6.4
+tqdm==4.64.0
+trueskill==0.4.5
 msgpack_numpy
-wandb
-pygame
-keyboard
-redis
-rlgym
-plotly
-numba
+wandb==0.12.15
+pygame==2.1.1
+keyboard==0.13.4
+redis==4.2.0
+rlgym==1.0.1
+plotly==5.7.0
+numba==0.54.1
 
-git+https://github.com/Rolv-Arild/rocket-learn.git@92a08ef09cb2294b91b6b5748b7967ea0e2314e4
+#git+https://github.com/Rolv-Arild/rocket-learn.git@92a08ef09cb2294b91b6b5748b7967ea0e2314e4
