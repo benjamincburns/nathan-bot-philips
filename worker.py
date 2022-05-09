@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # -past_version_prob SPECIFIES HOW OFTEN OLD VERSIONS WILL BE RANDOMLY SELECTED AND TRAINED AGAINST
     RedisRolloutWorker(
         redis,
-        "nathan-bot-philips",
+        os.environ.get("WORKER_NAME", "nathan-bot-philips"),
         match,
         streamer_mode=streamer,
         past_version_prob=0.2 if not streamer else 0,
