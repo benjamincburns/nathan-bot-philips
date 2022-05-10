@@ -18,4 +18,4 @@ rlgym==1.1.0
 plotly==5.7.0
 numba==0.54.1
 
-#git+https://github.com/Rolv-Arild/rocket-learn.git@92a08ef09cb2294b91b6b5748b7967ea0e2314e4
+git+https://github.com/Rolv-Arild/rocket-learn.git@92a08ef09cb2294b91b6b5748b7967ea0e2314e4
