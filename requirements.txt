@@ -14,7 +14,7 @@ wandb==0.12.15
 pygame==2.1.1
 keyboard==0.13.4
 redis==4.2.0
-rlgym==1.0.1
+rlgym==1.1.0
 plotly==5.7.0
 numba==0.54.1
 
