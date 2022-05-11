@@ -39,6 +39,7 @@ config = {
     "actor_lr": 1e-4,
     "critic_lr": 1e-4,
     "iterations_per_save": 10,
+    "seed": 123
 }
 
 if __name__ == "__main__":
@@ -55,8 +56,7 @@ if __name__ == "__main__":
     logger = wandb.init(
         project="nathan-bot-philips",
         entity="some_rando_rl",
-        name="Nathan Bot Philips",
-        id="3th4m7kt",
+        name="Save Boost Reward",
         config=config
     )
 
@@ -79,6 +79,9 @@ if __name__ == "__main__":
 
     def act():
         return DiscreteAction()
+
+    torch.manual_seed(config["seed"])
+    numpy.random.seed(config["seed"])
 
 
     # THE ROLLOUT GENERATOR CAPTURES INCOMING DATA THROUGH REDIS AND PASSES IT TO THE LEARNER.
