@@ -1,12 +1,13 @@
 from rewards.jump_touch_reward import JumpTouchReward
 from rewards.velocity_rewards import VelocityBallToGoalReward, VelocityPlayerToBallReward, GoalVelocityReward
 from rewards.kickoff_reward import KickoffReward
-from rlgym.utils.reward_functions.common_rewards.misc_rewards import EventReward
+from rlgym.utils.reward_functions.common_rewards.misc_rewards import EventReward, SaveBoostReward
 from rlgym.utils.reward_functions import CombinedReward
 
 def reward_function():
     return CombinedReward(
         (
+            SaveBoostReward(),
             VelocityPlayerToBallReward(),
             KickoffReward(),
             VelocityBallToGoalReward(),
@@ -20,5 +21,5 @@ def reward_function():
                 demo=25.0
             ),
         ),
-        (0.001, 0.01, 0.01, 0.01, 1.0, 0.01)
+        (0.01, 0.001, 0.01, 0.01, 0.01, 1.0, 0.01)
     )
